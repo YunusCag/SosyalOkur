@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_social_app/pages/home/listitem/post_list_item.dart';
 import 'package:flutter_social_app/viewmodels/friends_posts_viewmodel.dart';
@@ -12,6 +14,14 @@ class TimeLineFriend extends StatefulWidget {
 
 class _TimeLineFriendState extends State<TimeLineFriend> {
   FriendsPostsViewModel _postViewModel;
+  Completer<void> refreshCompleter;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    refreshCompleter=Completer<void>();
+  }
   @override
   Widget build(BuildContext context) {
     _postViewModel = Provider.of<FriendsPostsViewModel>(context);
@@ -20,73 +30,84 @@ class _TimeLineFriendState extends State<TimeLineFriend> {
         _postViewModel.timeLineModel.posts != null) {
       itemCount = _postViewModel.timeLineModel.posts.length;
     }
+
+    refreshCompleter.complete();
+    refreshCompleter=Completer();
+
     return Container(
       margin: EdgeInsets.only(top: 10),
-      child: ListView.builder(
-          key: new PageStorageKey('myFriendList'),
-          itemCount: itemCount,
-          itemBuilder: (context, index) {
-            return Consumer(
-              builder: (context, FriendsPostsViewModel postViewModel, child) {
-                print("FriendPostState:" +
-                    postViewModel.friendPostState.toString());
-                if (postViewModel.friendPostState == FriendPostState.Idle) {
-                  return Container(
-                    padding: EdgeInsets.all(16),
-                    width: double.infinity,
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                } else if (postViewModel.friendPostState ==
-                    FriendPostState.Loading) {
-                  return Container(
+      child: RefreshIndicator(
+        onRefresh: ()async{
+           Provider.of<FriendsPostsViewModel>(context,listen: false).refreshPostList();
+          print('OnRefresh:');
+          return refreshCompleter.future;
+        },
+        child: ListView.builder(
+            key: new PageStorageKey('myFriendList'),
+            itemCount: itemCount,
+            itemBuilder: (context, index) {
+              return Consumer(
+                builder: (context, FriendsPostsViewModel postViewModel, child) {
+                  print("FriendPostState:" +
+                      postViewModel.friendPostState.toString());
+                  if (postViewModel.friendPostState == FriendPostState.Idle) {
+                    return Container(
                       padding: EdgeInsets.all(16),
                       width: double.infinity,
-                      child: CircularProgressIndicator());
-                } else if (postViewModel.friendPostState ==
-                    FriendPostState.Loaded) {
-                  if (_postViewModel.timeLineModel.posts != null) {
-                    return PostListItem(
-                      post: _postViewModel.timeLineModel.posts[index],
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  } else if (postViewModel.friendPostState ==
+                      FriendPostState.Loading) {
+                    return Container(
+                        padding: EdgeInsets.all(16),
+                        width: double.infinity,
+                        child: CircularProgressIndicator());
+                  } else if (postViewModel.friendPostState ==
+                      FriendPostState.Loaded) {
+                    if (_postViewModel.timeLineModel.posts != null) {
+                      return PostListItem(
+                        post: _postViewModel.timeLineModel.posts[index],
+                      );
+                    }
+                  } else if (postViewModel.friendPostState ==
+                      FriendPostState.Error) {
+                    return Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            "Bir şeyler ters gitti",
+                            style: GoogleFonts.montserrat(
+                                fontSize: 24, color: Colors.red),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          CircularProgressIndicator(),
+                        ],
+                      ),
+                    );
+                  } else if (postViewModel.friendPostState ==
+                      FriendPostState.PostListEnd) {
+                    return Container(
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            "Gönderilerin sonuna ulaştınız.",
+                            style: GoogleFonts.montserrat(
+                                fontSize: 24, color: Colors.red),
+                          ),
+                        ],
+                      ),
                     );
                   }
-                } else if (postViewModel.friendPostState ==
-                    FriendPostState.Error) {
-                  return Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          "Bir şeyler ters gitti",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 24, color: Colors.red),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        CircularProgressIndicator(),
-                      ],
-                    ),
-                  );
-                } else if (postViewModel.friendPostState ==
-                    FriendPostState.PostListEnd) {
-                  return Container(
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          "Gönderilerin sonuna ulaştınız.",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 24, color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  );
-                }
 
-                return CircularProgressIndicator();
-              },
-            );
-          }),
+                  return CircularProgressIndicator();
+                },
+              );
+            }),
+      ),
     );
   }
 }

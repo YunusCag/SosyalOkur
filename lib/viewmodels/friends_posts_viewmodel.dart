@@ -63,6 +63,33 @@ class FriendsPostsViewModel with ChangeNotifier{
     }
 
   }
+  void refreshPostList() async{
+    _timeLineModel=null;
+    _token=await Hive.box(AppConstant.SETTINGS_BOX)
+        .get(AppConstant.TOKEN,defaultValue: "error");
+    try{
+      if(_token!='error'){
+        _friendPostState=FriendPostState.Loading;
+        _timeLineModel=await _postRepository.getPosts(
+            _token,
+            _page,
+            pagination: _pagination,
+            onlyFriend: _onlyFriend
+        );
+        if(_timeLineModel.status){
+          _friendPostState=FriendPostState.Loaded;
+        }else{
+          _friendPostState=FriendPostState.Error;
+        }
+        notifyListeners();
+      }
+    }catch(exception){
+      print("GlobalPostViewModel->initPostList:"+exception.toString());
+      _friendPostState=FriendPostState.Error;
+      notifyListeners();
+    }
+
+  }
   void getPostPage() async{
     _timeLineModel=null;
     _token=await Hive.box(AppConstant.SETTINGS_BOX)
@@ -100,6 +127,28 @@ class FriendsPostsViewModel with ChangeNotifier{
   Future<PostResponseModel> ratePos(double rate,String postId){
     try{
       var postModel=_postRepository.ratePost(_token, rate, postId);
+      if(postModel!=null){
+        return postModel;
+      }
+    }catch(exception){
+      print("GlobalPostViewModel->getPostPage:"+exception);
+    }
+    return null;
+  }
+  Future<PostResponseModel> likePost(String postId){
+    try{
+      var postModel=_postRepository.likePost(_token, postId);
+      if(postModel!=null){
+        return postModel;
+      }
+    }catch(exception){
+      print("GlobalPostViewModel->getPostPage:"+exception);
+    }
+    return null;
+  }
+  Future<PostResponseModel> unlikePost(String postId){
+    try{
+      var postModel=_postRepository.unlikePost(_token, postId);
       if(postModel!=null){
         return postModel;
       }
