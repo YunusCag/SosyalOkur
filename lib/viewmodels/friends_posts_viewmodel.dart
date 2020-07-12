@@ -21,6 +21,7 @@ class FriendsPostsViewModel with ChangeNotifier{
   int _page=1;
   final int _pagination=10;
   bool _onlyFriend=true;
+  bool _hasItem=true;
 
   FriendPostState get friendPostState => _friendPostState;
   TimeLineModel get timeLineModel => _timeLineModel;
@@ -40,6 +41,8 @@ class FriendsPostsViewModel with ChangeNotifier{
   void initPostList() async{
     _token=await Hive.box(AppConstant.SETTINGS_BOX)
         .get(AppConstant.TOKEN,defaultValue: "error");
+    _page=1;
+    _hasItem=true;
     try{
       if(_token!='error'){
         _friendPostState=FriendPostState.Loading;
@@ -67,6 +70,8 @@ class FriendsPostsViewModel with ChangeNotifier{
     _timeLineModel=null;
     _token=await Hive.box(AppConstant.SETTINGS_BOX)
         .get(AppConstant.TOKEN,defaultValue: "error");
+    _page=1;
+    _hasItem=true;
     try{
       if(_token!='error'){
         _friendPostState=FriendPostState.Loading;
@@ -91,12 +96,9 @@ class FriendsPostsViewModel with ChangeNotifier{
 
   }
   void getPostPage() async{
-    _timeLineModel=null;
-    _token=await Hive.box(AppConstant.SETTINGS_BOX)
-        .get(AppConstant.TOKEN,defaultValue: "error");
-    _page++;
     try{
-      if(_token!='error'){
+      if(_token!='error'&&_hasItem){
+        _page++;
         _friendPostState=FriendPostState.Loading;
         var response=await _postRepository.getPosts(
             _token,
@@ -104,6 +106,7 @@ class FriendsPostsViewModel with ChangeNotifier{
             pagination: _pagination,
             onlyFriend: _onlyFriend
         );
+        print(_page);
         if(response!=null&&response.status){
           if(response.posts!=null&&response.posts.length>0){
             _timeLineModel.posts.addAll(response.posts);

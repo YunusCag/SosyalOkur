@@ -7,6 +7,7 @@ import 'package:flutter_social_app/viewmodels/drawer_navigation_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/friends_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/global_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/login_view_model.dart';
+import 'package:flutter_social_app/viewmodels/share_post_viewmodel.dart';
 import 'package:get_it/get_it.dart';
 
 GetIt locator=GetIt.instance;
@@ -25,4 +26,6 @@ void setUpLocator(){
   locator.registerLazySingleton(() => DrawerNavigationViewModel());
   locator.registerLazySingleton(() => GlobalPostViewModel());
   locator.registerLazySingleton(() => FriendsPostsViewModel());
+  locator.registerLazySingleton(() => SharePostViewModel());
+
 }

@@ -4,6 +4,7 @@ import 'package:flutter_social_app/viewmodels/drawer_navigation_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/friends_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/global_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/login_view_model.dart';
+import 'package:flutter_social_app/viewmodels/share_post_viewmodel.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,9 @@ void main() async {
       ),
       ChangeNotifierProvider<FriendsPostsViewModel>(
         create: (context)=>locator.get<FriendsPostsViewModel>(),
+      ),
+      ChangeNotifierProvider<SharePostViewModel>(
+        create: (context)=>locator.get<SharePostViewModel>(),
       )
     ],
       child: MyApp()),
@@ -54,7 +58,7 @@ class MyApp extends StatelessWidget {
             primaryColor: Colors.purple
           ):
           ThemeData.light().copyWith(
-            primaryColor: Colors.purple
+            primaryColor: Colors.purple,
           ),
           home: box.get(AppConstant.FIRST_TIME,defaultValue: true)?
           OnBoardingPageScreen():

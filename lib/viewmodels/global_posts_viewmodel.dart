@@ -21,6 +21,11 @@ class GlobalPostViewModel with ChangeNotifier{
   int _page=1;
   final int _pagination=10;
   bool _onlyFriend=false;
+  bool _hasItem=true;
+
+
+
+
 
   GlobalPostState get globalPostState => _globalPostState;
   TimeLineModel get timeLineModel => _timeLineModel;
@@ -39,6 +44,7 @@ class GlobalPostViewModel with ChangeNotifier{
 
   void initPostList() async{
     _timeLineModel=null;
+    _hasItem=true;
     _token=await Hive.box(AppConstant.SETTINGS_BOX)
         .get(AppConstant.TOKEN,defaultValue: "error");
     try{
@@ -65,7 +71,9 @@ class GlobalPostViewModel with ChangeNotifier{
 
   }
   void refreshPostList() async{
+    _hasItem=true;
     _timeLineModel=null;
+    _page=1;
     _token=await Hive.box(AppConstant.SETTINGS_BOX)
         .get(AppConstant.TOKEN,defaultValue: "error");
     try{
@@ -92,12 +100,9 @@ class GlobalPostViewModel with ChangeNotifier{
 
   }
   void getPostPage() async{
-    _timeLineModel=null;
-    _token=await Hive.box(AppConstant.SETTINGS_BOX)
-        .get(AppConstant.TOKEN,defaultValue: "error");
-    _page++;
     try{
-      if(_token!='error'){
+      if(_token!='error'&&_hasItem){
+        _page++;
         _globalPostState=GlobalPostState.Loading;
         var response=await _postRepository.getPosts(
             _token,
@@ -105,21 +110,24 @@ class GlobalPostViewModel with ChangeNotifier{
             pagination: _pagination,
             onlyFriend: _onlyFriend
         );
-        print(response);
         if(response!=null&&response.status){
           if(response.posts!=null&&response.posts.length>0){
             _timeLineModel.posts.addAll(response.posts);
             _globalPostState=GlobalPostState.Loaded;
           }else{
+            _hasItem=false;
             _globalPostState=GlobalPostState.PostListEnd;
+
           }
         }else{
           _globalPostState=GlobalPostState.Error;
         }
         notifyListeners();
+      }else{
+        print('EndOfList:');
       }
     }catch(exception){
-      print("GlobalPostViewModel->initPostList:"+exception);
+      print("GlobalPostViewModel->initPostList:"+exception.toString());
       _globalPostState=GlobalPostState.Error;
       notifyListeners();
     }

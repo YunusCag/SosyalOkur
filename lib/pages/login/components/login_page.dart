@@ -20,7 +20,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  var url = 'http://10.0.2.2:3000/api';
 
   String _email;
   String _password;

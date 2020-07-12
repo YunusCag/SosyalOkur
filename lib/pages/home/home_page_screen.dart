@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_social_app/models/account.dart';
+import 'package:flutter_social_app/pages/share_post_page_screen.dart';
 import 'package:flutter_social_app/utils/app_constants.dart';
 import 'package:flutter_social_app/viewmodels/drawer_navigation_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/friends_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/global_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/login_view_model.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:line_awesome_icons/line_awesome_icons.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'components/home_page.dart';
 import 'components/profile_page.dart';
@@ -39,20 +42,24 @@ class _HomePageScreenState extends State<HomePageScreen> {
               GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateSharePage,
+        child: Icon(
+          LineAwesomeIcons.pencil,
+          size: 32,
+        ),
+      ),
       body: Consumer<DrawerNavigationViewModel>(
         builder: (context, DrawerNavigationViewModel viewModel, child) {
           if (viewModel.navigationState == DrawerNavigationState.HomePage) {
             return HomePage();
-          } else if (viewModel.navigationState ==
-              DrawerNavigationState.ProfilePage) {
+          } else if (viewModel.navigationState == DrawerNavigationState.ProfilePage) {
             return ProfilePage();
-          } else if (viewModel.navigationState ==
-              DrawerNavigationState.SettingsPage) {
+          } else if (viewModel.navigationState == DrawerNavigationState.SettingsPage) {
             return SettingsPage();
           } else if (viewModel.navigationState == DrawerNavigationState.About) {
             return HomePage();
-          } else if (viewModel.navigationState ==
-              DrawerNavigationState.RateUs) {
+          } else if (viewModel.navigationState == DrawerNavigationState.RateUs) {
             return HomePage();
           }
           return HomePage();
@@ -218,5 +225,15 @@ class _HomePageScreenState extends State<HomePageScreen> {
         ],
       ),
     );
+  }
+
+  void _navigateSharePage()async {
+    bool postShared=await Navigator.of(context).push(
+        PageTransition(type: PageTransitionType.rightToLeft, child: SharePostPageScreen())
+    );
+    if(postShared!=null&&postShared){
+      Provider.of<GlobalPostViewModel>(context,listen: false).refreshPostList();
+      Provider.of<FriendsPostsViewModel>(context,listen: false).refreshPostList();
+    }
   }
 }

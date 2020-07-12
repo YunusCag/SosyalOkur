@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_social_app/api/services/post_service.dart';
 import 'package:flutter_social_app/injection/locator.dart';
 import 'package:flutter_social_app/models/post_response_model.dart';
@@ -22,7 +24,7 @@ class PostRepository{
         return timeLineModel;
       }
     }catch(exception){
-      print("PostRepository->getPosts:"+exception);
+      print("PostRepository->getPosts:"+exception.toString());
     }
     return null;
   }
@@ -33,7 +35,7 @@ class PostRepository{
         return postResponseModel;
       }
     }catch(exception){
-      print("PostRepository->ratePost:"+exception);
+      print("PostRepository->ratePost:"+exception.toString());
     }
     return null;
   }
@@ -44,7 +46,7 @@ class PostRepository{
         return postResponseModel;
       }
     }catch(exception){
-      print("PostRepository->ratePost:"+exception);
+      print("PostRepository->ratePost:"+exception.toString());
     }
     return null;
   }
@@ -55,8 +57,20 @@ class PostRepository{
         return postResponseModel;
       }
     }catch(exception){
-      print("PostRepository->ratePost:"+exception);
+      print("PostRepository->ratePost:"+exception.toString());
     }
     return null;
   }
+  Future<PostResponseModel> sharePost(String token,String title,String description,File image)async{
+    try{
+      var postResponseModel=await _postService.sharePost(token, title, description, image);
+      if(postResponseModel!=null){
+        return postResponseModel;
+      }
+    }catch(exception){
+      print("PostRepository->sharePost:"+exception.toString());
+    }
+    return null;
+  }
+
 }

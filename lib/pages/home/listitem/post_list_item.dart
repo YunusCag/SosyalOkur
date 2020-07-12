@@ -3,12 +3,114 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_social_app/models/time_line_model.dart';
 import 'package:flutter_social_app/utils/app_constants.dart';
+import 'package:flutter_social_app/viewmodels/friends_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/global_posts_viewmodel.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
+import 'package:loading/indicator/ball_pulse_indicator.dart';
+import 'package:loading/loading.dart';
 import 'package:provider/provider.dart';
 
+
+class GlobalConsumerPost extends StatelessWidget {
+
+  final int index;
+
+
+  GlobalConsumerPost({
+    @required this.index
+  });
+
+  GlobalPostViewModel _postViewModel;
+  @override
+  Widget build(BuildContext context) {
+    _postViewModel = Provider.of<GlobalPostViewModel>(context);
+    return Consumer<GlobalPostViewModel>(
+      builder: (context, GlobalPostViewModel postViewModel, child) {
+        if (postViewModel.globalPostState == GlobalPostState.Idle) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            width: double.infinity,
+            child: Center(
+              child: Loading(
+                indicator: BallPulseIndicator(),
+                size: 100,
+                color: Colors.pink,
+              ),
+            ),
+          );
+        } else if (postViewModel.globalPostState ==
+            GlobalPostState.Loading) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            width: double.infinity,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (_postViewModel.timeLineModel.posts != null) {
+          return PostListItem(
+            post: _postViewModel.timeLineModel.posts[index],
+          );
+        }
+        return SizedBox(
+          height: 1,
+        );
+      },
+    );
+  }
+}
+class FriendConsumerPost extends StatelessWidget {
+
+  final int index;
+
+
+  FriendConsumerPost({
+    @required this.index
+  });
+
+  FriendsPostsViewModel _postViewModel;
+  @override
+  Widget build(BuildContext context) {
+    _postViewModel = Provider.of<FriendsPostsViewModel>(context);
+    return Consumer<FriendsPostsViewModel>(
+      builder: (context, FriendsPostsViewModel postViewModel, child) {
+        if (postViewModel.friendPostState == FriendPostState.Idle) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            width: double.infinity,
+            child: Center(
+              child: Loading(
+                indicator: BallPulseIndicator(),
+                size: 100,
+                color: Colors.pink,
+              ),
+            ),
+          );
+        } else if (postViewModel.friendPostState ==
+            FriendPostState.Loading) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            width: double.infinity,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (_postViewModel.timeLineModel.posts != null) {
+          return PostListItem(
+            post: _postViewModel.timeLineModel.posts[index],
+          );
+        }
+        return SizedBox(
+          height: 1,
+        );
+      },
+    );
+  }
+}
 class PostListItem extends StatefulWidget {
    Post post;
 
@@ -33,15 +135,16 @@ class _PostListItemState extends State<PostListItem> {
     super.initState();
 
   }
-
+  var height;
   @override
   Widget build(BuildContext context) {
     bool isImageExists = widget.post.profileImage != null;
     DateTime dateTime = DateTime.parse(widget.post.createdAt);
     difference = dateNow.difference(dateTime).inDays;
     _rating=widget.post.rateAverage.toDouble();
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 400),
+
+    height=MediaQuery.of(context).size.height;
+    return Container(
       margin: EdgeInsets.only(bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,7 +323,7 @@ class _PostListItemState extends State<PostListItem> {
       return Container(
         padding: EdgeInsets.only(top: 8),
         width: double.infinity,
-        height: 200,
+        height: height*0.3,
         child: Image.network(
           AppConstant.IMAGE_URL + widget.post.postImage,
           fit: BoxFit.cover,
