@@ -16,6 +16,7 @@ class _TimeLineFriendState extends State<TimeLineFriend> {
   FriendsPostsViewModel _postViewModel;
   Completer<void> refreshCompleter;
   ScrollController _scrollController=new ScrollController();
+  var _pageStorageKey=new PageStorageKey('friendsPosts');
   @override
   void initState() {
     // TODO: implement initState
@@ -33,7 +34,8 @@ class _TimeLineFriendState extends State<TimeLineFriend> {
     _postViewModel = Provider.of<FriendsPostsViewModel>(context);
     if (_postViewModel.timeLineModel != null &&
         _postViewModel.timeLineModel.posts != null) {
-      if(_postViewModel.friendPostState==FriendPostState.Loaded){
+      if(_postViewModel.friendPostState==FriendPostState.Loaded
+      ||_postViewModel.friendPostState==FriendPostState.PostListEnd){
         itemCount = _postViewModel.timeLineModel.posts.length;
       }
     }
@@ -48,7 +50,7 @@ class _TimeLineFriendState extends State<TimeLineFriend> {
           return refreshCompleter.future;
         },
         child: ListView.builder(
-          key: new PageStorageKey('friendListView'),
+          key:_pageStorageKey,
           controller: _scrollController,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) {

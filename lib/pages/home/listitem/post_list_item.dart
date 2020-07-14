@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_social_app/models/time_line_model.dart';
+import 'package:flutter_social_app/pages/post_detail_page_screen.dart';
 import 'package:flutter_social_app/utils/app_constants.dart';
 import 'package:flutter_social_app/viewmodels/friends_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/global_posts_viewmodel.dart';
@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:loading/indicator/ball_pulse_indicator.dart';
 import 'package:loading/loading.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 
@@ -273,9 +274,17 @@ class _PostListItemState extends State<PostListItem> {
 
       return InkWell(
         onTap: (){
+          /*
           setState(() {
             _readMore=!_readMore;
           });
+           */
+          Navigator.of(context).push(
+              PageTransition(
+                  type: PageTransitionType.rightToLeft,
+                  child: PostDetailPageScreen(
+                    post: widget.post,
+          )));
         },
         child: Container(
           child: Padding(

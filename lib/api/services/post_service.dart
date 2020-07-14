@@ -99,7 +99,7 @@ class PostService{
             )
           });
         }else{
-          new FormData.fromMap({
+          body=new FormData.fromMap({
             'title': title,
             'description':description,
           });

@@ -28,7 +28,7 @@ class _TimeLineGlobalState extends State<TimeLineGlobal> {
       }
     });
   }
-
+  var _pageStorageKey=new PageStorageKey('globalPosts');
   GlobalPostViewModel _postViewModel;
   var itemCount = 0;
   @override
@@ -40,7 +40,8 @@ class _TimeLineGlobalState extends State<TimeLineGlobal> {
 
     if (_postViewModel.timeLineModel != null &&
         _postViewModel.timeLineModel.posts != null) {
-      if(_postViewModel.globalPostState==GlobalPostState.Loaded){
+      if(_postViewModel.globalPostState==GlobalPostState.Loaded
+      ||_postViewModel.globalPostState==GlobalPostState.PostListEnd){
         itemCount = _postViewModel.timeLineModel.posts.length;
       }
 
@@ -53,8 +54,8 @@ class _TimeLineGlobalState extends State<TimeLineGlobal> {
           return refreshCompleter.future;
         },
         child: ListView.builder(
-            key: new PageStorageKey('myListView'),
-            controller: _scrollController,
+          key:  _pageStorageKey,
+          controller: _scrollController,
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
               return GlobalConsumerPost(index: index,);
