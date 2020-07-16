@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_social_app/api/repository/auth_repository.dart';
 import 'package:flutter_social_app/injection/locator.dart';
@@ -19,7 +21,10 @@ class LoginViewModel with ChangeNotifier{
   AuthResponseModel _responseModel;
   Account _accountModel;
   AuthRepository _repository;
+  String _token;
 
+
+  String get token => _token;
 
   Account get accountModel => _accountModel;
 
@@ -39,14 +44,14 @@ class LoginViewModel with ChangeNotifier{
   }
 
   void initRememberUser() async {
-    String token=await Hive.box(AppConstant.SETTINGS_BOX)
+    _token=await Hive.box(AppConstant.SETTINGS_BOX)
         .get(AppConstant.TOKEN,defaultValue: "error");
     if(token=="error"){
       _loginState=LoginState.LogOff;
       notifyListeners();
     }else{
       //TODO handle first login steps
-      await getAccount(token);
+      await getAccount();
 
     }
 
@@ -56,7 +61,8 @@ class LoginViewModel with ChangeNotifier{
       _loginState=LoginState.Loading;
       _responseModel=await _repository.loginAccount(email, password);
       if(_responseModel.status){
-        _accountModel=await getAccount(_responseModel.token);
+        _token=_responseModel.token;
+        _accountModel=await getAccount();
         _loginState=LoginState.SignedIn;
       }else{
         _loginState=LoginState.Error;
@@ -69,12 +75,11 @@ class LoginViewModel with ChangeNotifier{
     }
     return null;
   }
-  Future<Account> getAccount(String token) async{
+  Future<Account> getAccount() async{
     try{
       print('LoginViewModel:$token');
       _loginState=LoginState.Loading;
       _accountModel=await _repository.getAccount(token);
-      print('LoginViewModel:$_accountModel');
       if(accountModel.status){
         _loginState=LoginState.SignedIn;
       }else{
@@ -88,5 +93,15 @@ class LoginViewModel with ChangeNotifier{
       notifyListeners();
     }
     return null;
+  }
+  Future<void> changeProfileImage(File image)async{
+    try{
+      var model=await _repository.changePhoto(token, image);
+      if(model!=null){
+        _accountModel=model;
+      }
+    }catch(exception){
+
+    }
   }
 }

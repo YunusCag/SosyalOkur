@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_social_app/injection/locator.dart';
 import 'package:flutter_social_app/models/account.dart';
 import 'package:flutter_social_app/models/auth_response_model.dart';
@@ -51,5 +53,15 @@ class AuthRepository{
     }
     return null;
   }
-
+  Future<Account> changePhoto(String token,File image)async{
+    try{
+      var account=await _authService.changeProfileImage(token, image);
+      if(account!=null){
+        return account;
+      }
+    }catch(exception){
+      print("AuthRepository->changePhoto:"+exception.toString());
+    }
+    return null;
+  }
 }

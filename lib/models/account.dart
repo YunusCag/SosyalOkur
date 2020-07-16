@@ -2,12 +2,18 @@ class Account {
   bool status;
   User user;
   String message;
-
+  List<UserFriend> friends;
   Account({this.status, this.user,this.message});
 
   Account.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    if (json['friends'] != null) {
+      friends = new List<UserFriend>();
+      json['friends'].forEach((v) {
+        friends.add(new UserFriend.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -16,6 +22,7 @@ class Account {
     if (this.user != null) {
       data['user'] = this.user.toJson();
     }
+
     return data;
   }
 }
@@ -133,6 +140,50 @@ class CreatedPost {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
+    return data;
+  }
+}
+class UserFriend {
+  String sId;
+  String name;
+  String username;
+  String email;
+  String createdAt;
+  String updatedAt;
+  int iV;
+  String profileImage;
+
+  UserFriend(
+      {this.sId,
+        this.name,
+        this.username,
+        this.email,
+        this.createdAt,
+        this.updatedAt,
+        this.iV,
+        this.profileImage});
+
+  UserFriend.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    name = json['name'];
+    username = json['username'];
+    email = json['email'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    iV = json['__v'];
+    profileImage = json['profileImage'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['name'] = this.name;
+    data['username'] = this.username;
+    data['email'] = this.email;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['__v'] = this.iV;
+    data['profileImage'] = this.profileImage;
     return data;
   }
 }

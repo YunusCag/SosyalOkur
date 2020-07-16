@@ -46,7 +46,7 @@ class _PostDetailPageScreenState extends State<PostDetailPageScreen> {
             expandedHeight: height*0.4,
             pinned: true,
             floating: true,
-            flexibleSpace: FlexibleSpaceBar(
+           flexibleSpace: FlexibleSpaceBar(
                 background: buildPostImage(),
               title: Text(
                 widget.post.title.trim(),

@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 
 
+import 'package:dio/dio.dart';
 import 'package:flutter_social_app/models/account.dart';
 import 'package:flutter_social_app/models/auth_response_model.dart';
 import 'package:flutter_social_app/models/user_register_model.dart';
 import 'package:flutter_social_app/utils/app_constants.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart';
 class AuthService {
   Future<AuthResponseModel> registerUser(UserRegisterModel userModel) async {
     var registerUrl = AppConstant.BASE_URL + "/users/addUser";
@@ -59,6 +62,36 @@ class AuthService {
       }
     }catch(exception){
       print("AuthService->getAccount:"+exception.toString());
+    }
+    return null;
+  }
+  Future<Account> changeProfileImage(String token,File image)async{
+    try{
+      if(token!='error'&&image!=null){
+        var profileImageUrl=AppConstant.BASE_URL+'/users/setProfileImage';
+        Map<String,String> headers={
+          'Authorization':token,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        String fileName = image.path.split('/').last;
+        final ext = extension(image.path).replaceAll('.', '');
+        FormData body=new FormData.fromMap({
+          'profileImage':await MultipartFile.fromFile(
+              image.path,
+              filename: fileName+'.'+ext,
+              contentType: MediaType('image',ext)
+          )
+        });
+        var response=await Dio().post(profileImageUrl,options: Options(
+            headers: headers
+        ),data:body );
+        if(response.statusCode==200){
+          Map<String,dynamic> map=Map<String,dynamic>.from(response.data);
+          return Account.fromJson(map);
+        }
+      }
+    }catch(exception){
+      print("AuthService->changeProfileImage:"+exception.toString());
     }
     return null;
   }
