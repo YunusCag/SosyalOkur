@@ -1,16 +1,15 @@
-# flutter_social_app
 
-A new Flutter application.
 
-## Getting Started
+<div style="width: 100%; display: table;">
+    <div style="display: table-row">
+        <div style="width: 600px; display: table-cell;"> 
+          <img src='https://github.com/YunusCag/SosyalOkur/blob/master/AppScreenShots/Screenshot_1594394907.png' width='300' height='600'>
+<img src='https://user-images.githubusercontent.com/49796926/87170183-ac24b500-c2d9-11ea-8c46-ffd58c67cce1.png' width='300' height='600'>
+      </div>
+        <div style="display: table-cell;"> 
+        <img src='https://github.com/YunusCag/SosyalOkur/blob/master/AppScreenShots/Screenshot_1594394941.png' width='300' height='600'>
+<img src='https://github.com/YunusCag/SosyalOkur/blob/master/AppScreenShots/Screenshot_1594394957.png' width='300' height='600'>
+        </div>
+    </div>
+</div>
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
