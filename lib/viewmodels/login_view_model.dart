@@ -28,13 +28,17 @@ class LoginViewModel with ChangeNotifier{
 
   Account get accountModel => _accountModel;
 
+  set accountModel(Account value) {
+    _accountModel = value;
+    notifyListeners();
+  }
+
   LoginState get loginState => _loginState;
 
   AuthResponseModel get responseModel => _responseModel;
 
   set loginState(LoginState value) {
     _loginState = value;
-    _repository=locator.get<AuthRepository>();
     notifyListeners();
   }
 
@@ -99,6 +103,29 @@ class LoginViewModel with ChangeNotifier{
       var model=await _repository.changePhoto(token, image);
       if(model!=null){
         _accountModel=model;
+        notifyListeners();
+      }
+    }catch(exception){
+
+    }
+  }
+  Future<Account> addFriends(String id)async{
+    try{
+      var model=await _repository.addFriend(token, id);
+      if(model!=null){
+        _accountModel=model;
+        return model;
+      }
+    }catch(exception){
+
+    }
+  }
+  Future<Account> deleteFriends(String id)async{
+    try{
+      var model=await _repository.deleteFriend(token, id);
+      if(model!=null){
+        _accountModel=model;
+        return model;
       }
     }catch(exception){
 

@@ -64,4 +64,26 @@ class AuthRepository{
     }
     return null;
   }
+  Future<Account> addFriend(String token,String id)async{
+    try{
+      var account=await _authService.addFriend(token, id);
+      if(account!=null){
+        return account;
+      }
+    }catch(exception){
+      print("AuthRepository->addFriend:"+exception.toString());
+    }
+    return null;
+  }
+  Future<Account> deleteFriend(String token,String id)async{
+    try{
+      var account=await _authService.deleteFriend(token, id);
+      if(account!=null){
+        return account;
+      }
+    }catch(exception){
+      print("AuthRepository->deleteFriend:"+exception.toString());
+    }
+    return null;
+  }
 }

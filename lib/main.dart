@@ -4,6 +4,7 @@ import 'package:flutter_social_app/viewmodels/drawer_navigation_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/friends_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/global_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/login_view_model.dart';
+import 'package:flutter_social_app/viewmodels/profile_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/share_post_viewmodel.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,9 @@ void main() async {
       ),
       ChangeNotifierProvider<SharePostViewModel>(
         create: (context)=>locator.get<SharePostViewModel>(),
+      ),
+      ChangeNotifierProvider<ProfileViewModel>(
+        create: (context)=>locator.get<ProfileViewModel>(),
       )
     ],
       child: MyApp()),
@@ -83,6 +87,7 @@ class _AuthPageScreenState extends State<AuthPageScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<LoginViewModel>(context,listen: false).initRememberUser();
+      Provider.of<ProfileViewModel>(context,listen: false).initRememberUser();
     });
   }
   @override

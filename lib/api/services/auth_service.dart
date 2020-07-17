@@ -95,4 +95,35 @@ class AuthService {
     }
     return null;
   }
+  Future<Account> addFriend(String token,String id)async{
+    try{
+      if(token!='error'&&id!=null){
+        var friendUrl=AppConstant.BASE_URL+"/users/addFriend/$id";
+        Map<String,String> headers={'Authorization':token};
+        var response=await http.post(friendUrl,headers: headers);
+        if(response.statusCode==200){
+          return Account.fromJson(jsonDecode(response.body));
+        }
+      }
+    }catch(exception){
+      print("AuthService->addFriend:"+exception.toString());
+    }
+    return null;
+  }
+  Future<Account> deleteFriend(String token,String id)async{
+    try{
+      if(token!='error'&&id!=null){
+        var friendUrl=AppConstant.BASE_URL+"/users/deleteFriend/$id";
+        Map<String,String> headers={'Authorization':token};
+        var response=await http.post(friendUrl,headers: headers);
+        if(response.statusCode==200){
+          return Account.fromJson(jsonDecode(response.body));
+        }
+      }
+    }catch(exception){
+      print("AuthService->deleteFriend:"+exception.toString());
+    }
+    return null;
+  }
+
 }

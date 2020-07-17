@@ -7,6 +7,7 @@ import 'package:flutter_social_app/utils/app_constants.dart';
 import 'package:flutter_social_app/viewmodels/friends_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/global_posts_viewmodel.dart';
 import 'package:flutter_social_app/viewmodels/login_view_model.dart';
+import 'package:flutter_social_app/viewmodels/profile_viewmodel.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker_gallery_camera/image_picker_gallery_camera.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
@@ -18,14 +19,16 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Account accountModel;
-  LoginViewModel _viewModel;
+  ProfileViewModel _viewModel;
 
   @override
   Widget build(BuildContext context) {
-    _viewModel=Provider.of<LoginViewModel>(context);
+    refreshModel(context);
     var height=MediaQuery.of(context).size.height;
     var width=MediaQuery.of(context).size.width;
+    _viewModel=Provider.of<ProfileViewModel>(context);
     accountModel=_viewModel.accountModel;
+    print('Friends Length:${accountModel.friends.length}');
     return Stack(
       children: <Widget>[
         Container(
@@ -155,8 +158,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: height*0.35,
                     child: ListView.builder(
                         itemBuilder: (context,index){
+                          UserFriend userFriend=accountModel.friends[index];
                           return FriendListTile(
-                            userFriend: accountModel.friends[index],
+                            userFriend: userFriend,
+                            removeFriend: ()async{
+                              await _viewModel.deleteFriends(userFriend.sId);
+                              await _viewModel.initRememberUser();
+                            },
+                            addFriend: ()async{
+                              await _viewModel.addFriends(userFriend.sId);
+                              await _viewModel.initRememberUser();
+                            },
                           );
                         },itemCount: accountModel.friends.length,),
                   )
@@ -167,6 +179,10 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ],
     );
+  }
+
+  void refreshModel(BuildContext context) {
+    _viewModel=Provider.of<ProfileViewModel>(context);
   }
   void _pickImageFromGallery(ImgSource imageSource)async{
     var image=await ImagePickerGC.pickImage(
@@ -227,13 +243,23 @@ class ProfileInfoText extends StatelessWidget {
     );
   }
 }
-class FriendListTile extends StatelessWidget {
+class FriendListTile extends StatefulWidget {
 
   final UserFriend userFriend;
+  final Function() removeFriend;
+  final Function() addFriend;
 
   FriendListTile({
-    @required this.userFriend
+    @required this.userFriend,
+    @required this.removeFriend,
+    @required this.addFriend
   });
+
+  @override
+  _FriendListTileState createState() => _FriendListTileState();
+}
+
+class _FriendListTileState extends State<FriendListTile> {
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +272,7 @@ class FriendListTile extends StatelessWidget {
           ),
           ClipOval(
             child: Image.network(
-              AppConstant.IMAGE_URL + userFriend.profileImage ?? '',
+              AppConstant.IMAGE_URL + widget.userFriend.profileImage ?? '',
               width: 40,
               height: 40,
               fit: BoxFit.cover,
@@ -259,7 +285,7 @@ class FriendListTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                userFriend.name,
+                widget.userFriend.name,
                 style: GoogleFonts.montserrat(
                     fontSize: 16,
                     color: Colors.blue,
@@ -269,28 +295,45 @@ class FriendListTile extends StatelessWidget {
                 height: 2,
               ),
               Text(
-                "@" + userFriend.username,
+                "@" + widget.userFriend.username,
                 style: GoogleFonts.montserrat(
                     fontSize: 14, fontWeight: FontWeight.normal),
               ),
             ],
           ),
           Spacer(),
-          FlatButton(
-            onPressed: (){
-
-            },
-            child: Text(
-              'remove',
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.red
-              ),
-            ),
-          )
+          buildFriendButton()
         ],
       ),
     );
+  }
+
+  FlatButton buildFriendButton() {
+    if(widget.userFriend!=null){
+      return FlatButton(
+        onPressed: widget.removeFriend,
+        child: Text(
+          'remove',
+          style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.red
+          ),
+        ),
+      );
+    }else{
+      return FlatButton(
+        onPressed: widget.addFriend,
+        child: Text(
+          'addFriend',
+          style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.green
+          ),
+        ),
+      );
+    }
+
   }
 }
